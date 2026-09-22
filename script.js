@@ -11,7 +11,7 @@
   const $$ = (s, c) => Array.from((c || document).querySelectorAll(s));
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-
+  
   const toastEl = $('#toast');
   let toastTimer;
   function toast(msg) {
@@ -22,6 +22,7 @@
     toastTimer = setTimeout(() => toastEl.classList.remove('show'), 2600);
   }
 
+  
   const yearEl = $('#year');
   if (yearEl) yearEl.textContent = new Date().getFullYear();
 
@@ -255,14 +256,14 @@
 
     let anyEnabled = false;
     $$('option', slotField).forEach(opt => {
-      if (!opt.value) return; // keep the "Choose one" placeholder disabled/unselectable, same as the concern dropdown
+      if (!opt.value) return; 
       const end = opt.dataset.end;
       const pastForToday = isToday && end && toMinutes(end) <= nowMinutes;
       opt.disabled = Boolean(pastForToday);
       if (!opt.disabled) anyEnabled = true;
     });
 
-  
+    
     const selected = slotField.selectedOptions[0];
     if (slotField.value && selected && selected.disabled) {
       slotField.value = '';
@@ -313,7 +314,7 @@
 
     form.addEventListener('submit', e => {
       e.preventDefault();
-      if ($('#company') && $('#company').value) return; // honeypot: silent drop
+      if ($('#company') && $('#company').value) return;
 
       const name = $('#patientName').value.trim();
       const phone = $('#patientPhone').value.trim();
@@ -428,7 +429,7 @@
   const cartTotalEl = $('#cartTotal');
   const cartWaBtn = $('#cartWaBtn');
 
-  let bag = []; // { name, price, qty }
+  let bag = [];
 
   function bagQty() { return bag.reduce((s, i) => s + i.qty, 0); }
   function bagTotal() { return bag.reduce((s, i) => s + i.qty * i.price, 0); }
@@ -574,7 +575,6 @@
     });
   }
 
-  
   $$('[data-ba]').forEach(ba => {
     const range = $('.ba-range', ba);
     const before = $('.ba-before', ba);
@@ -591,7 +591,6 @@
     sync();
   });
 
-  
   const track = $('#reviewTrack');
   if (track) {
     const step = () => Math.min(380, track.clientWidth * 0.86);
