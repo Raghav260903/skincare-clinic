@@ -1,17 +1,17 @@
-/* VaaveDerm — interactions */
+
 (function () {
   'use strict';
 
-  /* ---- CONFIG: point this at your real lead-capture endpoint ---- */
+  
   const LEAD_ENDPOINT = 'https://api.YOURDOMAIN.com/leads';
-  /* ---- CONFIG: clinic's WhatsApp number, country code + number, no + or spaces ---- */
+  
   const WHATSAPP_NUMBER = '919444879169';
 
   const $ = (s, c) => (c || document).querySelector(s);
   const $$ = (s, c) => Array.from((c || document).querySelectorAll(s));
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /* ---------- Toast ---------- */
+
   const toastEl = $('#toast');
   let toastTimer;
   function toast(msg) {
@@ -22,11 +22,10 @@
     toastTimer = setTimeout(() => toastEl.classList.remove('show'), 2600);
   }
 
-  /* ---------- Year ---------- */
   const yearEl = $('#year');
   if (yearEl) yearEl.textContent = new Date().getFullYear();
 
-  /* ---------- Mobile menu ---------- */
+  
   const toggle = $('#mobileToggle');
   const nav = $('#navMenu');
   if (toggle && nav) {
@@ -50,7 +49,7 @@
     });
   }
 
-  /* ---------- Header state, scroll progress, back to top, active link ---------- */
+  
   const header = $('#header');
   const progress = $('#scrollProgress');
   const toTop = $('#toTop');
@@ -94,7 +93,7 @@
     );
   }
 
-  /* ---------- Doctor photo carousel ---------- */
+  
   const doctorCarousel = $('#doctorCarousel');
   if (doctorCarousel) {
     const slides = $$('.doctor-slide', doctorCarousel);
@@ -126,7 +125,7 @@
     if (prevBtn) prevBtn.addEventListener('click', () => showSlide(idx - 1));
   }
 
-  /* ---------- Reveal on scroll ---------- */
+  
   const revealEls = $$('.reveal');
   if (revealEls.length && 'IntersectionObserver' in window && !reduce) {
     const io = new IntersectionObserver((entries, obs) => {
@@ -139,7 +138,7 @@
     revealEls.forEach(el => el.classList.add('in'));
   }
 
-  /* ---------- Animated stat counters ---------- */
+  
   const counters = $$('.stat-card h3[data-count]');
   function runCounter(el) {
     const target = parseInt(el.dataset.count, 10);
@@ -165,7 +164,7 @@
     counters.forEach(runCounter);
   }
 
-  /* ---------- FAQ accordion ---------- */
+  
   const headers = $$('.accordion-header');
   function contentFor(header) {
     const item = header.closest('.accordion-item');
@@ -198,7 +197,7 @@
     });
   });
 
-  /* ---------- Prefill concern from service cards ---------- */
+  
   const concernSelect = $('#patientConcern');
   $$('[data-prefill]').forEach(link => {
     link.addEventListener('click', () => {
@@ -210,12 +209,7 @@
     });
   });
 
-  /* ---------- Date-aware slot availability ---------- */
-  // Lets a patient pick the day they want (never a day in the past), and
-  // automatically greys out any time slot that has already ended today —
-  // e.g. once it's past 1 PM, "Morning (10 AM – 1 PM)" can no longer be
-  // picked for today's date; picking a future date makes every slot
-  // available again.
+  
   const dateField = $('#patientDate');
   const slotField = $('#patientSlot');
 
@@ -238,12 +232,7 @@
   if (dateField) {
     dateField.min = todayISO();
 
-    // Calendar-picker-only: the patient should never be able to type a day,
-    // month or year (e.g. keying in a stray "2025") straight into the
-    // field — the date can only come from picking it on the native
-    // calendar. "readonly" (set in the HTML) already stops typed input in
-    // most browsers; this backs that up everywhere and makes sure a click
-    // or focus always opens the calendar instead of just sitting there.
+    
     function openDatePicker() {
       if (typeof dateField.showPicker === 'function') {
         try { dateField.showPicker(); } catch (_) { /* ignore: needs a user gesture in some browsers */ }
@@ -266,14 +255,14 @@
 
     let anyEnabled = false;
     $$('option', slotField).forEach(opt => {
+      if (!opt.value) return; // keep the "Choose one" placeholder disabled/unselectable, same as the concern dropdown
       const end = opt.dataset.end;
       const pastForToday = isToday && end && toMinutes(end) <= nowMinutes;
       opt.disabled = Boolean(pastForToday);
       if (!opt.disabled) anyEnabled = true;
     });
 
-    // If the slot that was selected just aged out, clear the selection
-    // so the patient has to actively pick a slot that's still open.
+  
     const selected = slotField.selectedOptions[0];
     if (slotField.value && selected && selected.disabled) {
       slotField.value = '';
@@ -287,7 +276,7 @@
   }
   updateSlotAvailability();
 
-  /* ---------- Lead form ---------- */
+  
   const form = $('#leadForm');
   const successBox = $('#bookingSuccess');
   let pendingRedirect = null;
@@ -351,9 +340,7 @@
 
       const dateLabel = formatDateLabel(dateVal);
 
-      // Optional: log the lead to your own backend/CRM in the background.
-      // This never blocks the WhatsApp redirect below, so a dead endpoint
-      // (or none configured yet) won't stop the patient from reaching you.
+      
       try {
         fetch(LEAD_ENDPOINT, {
           method: 'POST',
@@ -409,10 +396,7 @@
     });
   }
 
-  // If the person already submitted and got redirected to WhatsApp earlier in
-  // this browser tab (session), coming back here (via back button, bfcache,
-  // or a fresh reload of the same tab) should show a completed state instead
-  // of replaying the transient "sending…" message.
+  
   (function restoreSentState() {
     const raw = sessionStorage.getItem('vd_slot_sent');
     if (!raw || !form || !successBox) return;
@@ -432,7 +416,7 @@
     successBox.hidden = false;
   })();
 
-  /* ---------- Bag / cart drawer ---------- */
+  
   const countEl = $('#cartCount');
   const cartBtn = $('#cartBtn');
   const cartOverlay = $('#cartOverlay');
@@ -590,7 +574,7 @@
     });
   }
 
-  /* ---------- Before / after comparison ---------- */
+  
   $$('[data-ba]').forEach(ba => {
     const range = $('.ba-range', ba);
     const before = $('.ba-before', ba);
@@ -607,7 +591,7 @@
     sync();
   });
 
-  /* ---------- Reviews slider ---------- */
+  
   const track = $('#reviewTrack');
   if (track) {
     const step = () => Math.min(380, track.clientWidth * 0.86);
